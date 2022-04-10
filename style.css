@@ -58,9 +58,16 @@ button {
 #currentCity {
     margin: 20px;
     border: solid 2px;
-    height: 300px;
 }
 
 #currentCity h2 {
     padding: 5px;
+}
+
+#currentData {
+    list-style-type: none;
+}
+
+#currentData li {
+    margin: 15px;
 }
