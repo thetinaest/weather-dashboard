@@ -4,6 +4,7 @@ var searchedCities = document.getElementById("cityResults");
 
 document.getElementById("searchForm").addEventListener("submit", function(event) {
     event.preventDefault();
+    document.getElementById("currentData").innerHTML="";
     var city = document.getElementById("cityInput").value;
     var storedCities = localStorage.getItem("cities");
     var li = document.createElement('li');
@@ -27,6 +28,12 @@ document.getElementById("searchForm").addEventListener("submit", function(event)
 
 });
 
+document.getElementById("cityResults").addEventListener("click", function(event){
+    var city = event.target.innerText;
+    document.getElementById("currentData").innerHTML="";
+    getLocation(city);
+})
+
 // display previous searches on page load
 function displaySearches() {
     storedCities = JSON.parse(storedCities);
@@ -34,6 +41,7 @@ function displaySearches() {
         for (var i=0; i<storedCities.length; i++) {
             var li = document.createElement('li');
             li.innerText = storedCities[i].city;
+            li.setAttribute("id", "clickedCity");
             searchedCities.appendChild(li);
         }
     }
@@ -69,10 +77,12 @@ function getWeather(weatherUrl, city) {
     })
     .then(function(data) {
         var date = moment().format("MMMM DD, YYYY");
+        console.log(data);
         var temperature = data.current.temp;
         var humidity = data.current.humidity;
         var wind = data.current.wind_speed;
         var uvi = data.current.uvi;
+        var icon = data.current.weather[0];
         var currentBox = document.getElementById('currentData');
         document.getElementById('cityName').textContent = city + " (" + date + ")";
         //append temp to current data list
@@ -89,7 +99,17 @@ function getWeather(weatherUrl, city) {
         currentBox.appendChild(hum);
         //append UV to current data
         var uvIndex = document.createElement('li');
-        uvIndex.textContent = "UV Index: " + uvi;
+        uvIndex.innerHTML = "UV Index: <span id='test'> " + uvi + " </span>";
+        var test = uvIndex.querySelector("span");
+        if (uvi > 5) {
+            test.style.backgroundColor = "red";
+            test.style.color = "white";
+        } else if (uvi > 2) {
+            test.style.backgroundColor = "yellow";
+        } else {
+            test.style.backgroundColor = "green";
+            test.style.color = "white";
+        }
         currentBox.appendChild(uvIndex);
     })
 };
