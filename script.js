@@ -76,9 +76,10 @@ function getWeather(weatherUrl, city) {
         var humidity = data.current.humidity;
         var wind = data.current.wind_speed;
         var uvi = data.current.uvi;
-        var icon = data.current.weather[0];
+        var icon = data.current.weather[0].icon;
         var currentBox = document.getElementById('currentData');
-        document.getElementById('cityName').textContent = city + " (" + date + ")";
+        // document.getElementById('cityName').textContent = city + " (" + date + ")";
+        document.getElementById('cityName').innerHTML = city + " (" + date + ") <img src ='https://openweathermap.org/img/wn/" +icon+"@2x.png' width=40px height=40px>";
         //append temp to current data list
         var temp = document.createElement('li');
         temp.textContent = "Temp: " + temperature + "\u00B0F"
@@ -112,25 +113,29 @@ function getWeather(weatherUrl, city) {
 
 //get 5 day forecast
 function futureWeather(data) {
-    console.log("we in");
     var forecast = data.daily;
     var futureBox = document.getElementById("fiveDays");
     //clear out previous data
     futureBox.innerHTML = "";
-    console.log(forecast);
     for (var i=1; i<6; i++) {
         var card = document.createElement("div");
         card.setAttribute("class", "card");
         var futureDate = document.createElement("h4");
+        var futureIcon = document.createElement("img");
         var futureTemp = document.createElement("p");
         var futureWind = document.createElement("p");
         var futureHum = document.createElement("p");
-        futureDate.innerText = moment().add(i, 'd').format("MM DD, YYYY");
-        console.log(forecast[i].temp.day);
+        var dailyIcon = forecast[i-1].weather[0].icon;
+        futureDate.innerText = moment().add(i, 'd').format("MM/DD/YYYY");
         futureTemp.innerText = "Temp: " + forecast[i].temp.day;
         futureWind.innerText = "Wind: " + forecast[i].wind_speed + " MPH";
         futureHum.innerText = "Humidity: " + forecast[i].humidity + "%";
+        // sets all required attributes to img tag to display icon
+        futureIcon.setAttribute("src", "https://openweathermap.org/img/wn/" + dailyIcon +"@2x.png");
+        futureIcon.setAttribute("width", "30px");
+        futureBox.setAttribute("height", "30px");
         card.appendChild(futureDate);
+        card.appendChild(futureIcon);
         card.appendChild(futureTemp);
         card.appendChild(futureWind);
         card.appendChild(futureHum);
@@ -138,7 +143,7 @@ function futureWeather(data) {
         futureBox.appendChild(card);
     }
     
-}
+};
 
 //call standalone functions
 displaySearches();
