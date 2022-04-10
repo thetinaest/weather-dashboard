@@ -41,7 +41,6 @@ function displaySearches() {
         for (var i=0; i<storedCities.length; i++) {
             var li = document.createElement('li');
             li.innerText = storedCities[i].city;
-            li.setAttribute("id", "clickedCity");
             searchedCities.appendChild(li);
         }
     }
@@ -60,14 +59,10 @@ function getLocation(city) {
             var lon = data[0].lon;
             var weatherUrl = "https://api.openweathermap.org/data/2.5/onecall?lat="+ lat +"&lon="+ lon +"&exclude=minutely,hourly,alerts&appid=" + apiKey + "&units=imperial";
             getWeather(weatherUrl, city);
-            console.log(weatherUrl);
         } else {
             alert("City not found. Please try another search");
         }
     })
-    .catch(function(error) {
-        console.log(error.message);
-    });
 };
 
 function getWeather(weatherUrl, city) {
@@ -77,7 +72,6 @@ function getWeather(weatherUrl, city) {
     })
     .then(function(data) {
         var date = moment().format("MMMM DD, YYYY");
-        console.log(data);
         var temperature = data.current.temp;
         var humidity = data.current.humidity;
         var wind = data.current.wind_speed;
@@ -111,8 +105,40 @@ function getWeather(weatherUrl, city) {
             test.style.color = "white";
         }
         currentBox.appendChild(uvIndex);
+        //calls 5 day forecast function
+        futureWeather(data);
     })
 };
+
+//get 5 day forecast
+function futureWeather(data) {
+    console.log("we in");
+    var forecast = data.daily;
+    var futureBox = document.getElementById("fiveDays");
+    //clear out previous data
+    futureBox.innerHTML = "";
+    console.log(forecast);
+    for (var i=1; i<6; i++) {
+        var card = document.createElement("div");
+        card.setAttribute("class", "card");
+        var futureDate = document.createElement("h4");
+        var futureTemp = document.createElement("p");
+        var futureWind = document.createElement("p");
+        var futureHum = document.createElement("p");
+        futureDate.innerText = moment().add(i, 'd').format("MM DD, YYYY");
+        console.log(forecast[i].temp.day);
+        futureTemp.innerText = "Temp: " + forecast[i].temp.day;
+        futureWind.innerText = "Wind: " + forecast[i].wind_speed + " MPH";
+        futureHum.innerText = "Humidity: " + forecast[i].humidity + "%";
+        card.appendChild(futureDate);
+        card.appendChild(futureTemp);
+        card.appendChild(futureWind);
+        card.appendChild(futureHum);
+        //appends entire card to 5 day forecast section
+        futureBox.appendChild(card);
+    }
+    
+}
 
 //call standalone functions
 displaySearches();
